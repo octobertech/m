@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}user modified - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>You {% if readed %}are reading{% else %}unreaded{% endif %} this user.</h2>
+        <p>The user has been {% if readed %}added to{% else %}removed from{% endif %} your reading list.</p>
+    </div>
+{% endblock %}

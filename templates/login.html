@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - Login{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+            <h4>login</h4>
+            <div class="form-group">
+              <form class="form-horizontal" method="POST">
+              {% csrf_token %}
+              <div class="form-control">
+                  {{ login_form.username.errors }}
+                  {{ login_form.username.label }}:
+                  {{ login_form.username }}<br>
+              </div>
+              <div class="form-control">
+                  {{ login_form.password.errors }}
+                  {{ login_form.password.label }}:
+                  {{ login_form.password }}
+              </div>
+                {% if next %}
+                  <input type="hidden" name="next" value="{{ next }}" />
+                {% endif %}
+              <input type="submit" class="btn btn-danger" value="enter">
+              </form>
+            </div>
+            <h4>don't have an account yet? <a href="{% url "signup" %}">signup</a>.</h4>
+    </div>
+
+{% endblock %}

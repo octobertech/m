@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - {{ username }}'s profile{% endblock %}
+
+{% block content %}
+<!--
+    <div class="container user-profile" style="text-align: center">
+    <div class="row user-profile-header">
+        <img class="img-thumbnail user-pic" src="{{ profile.pic }}" /><br />
+        <p class="user-name">{{ profile.name }}Name</p>
+        <p class="user-username">@{{ username }}</p>
+        <p class="user-about">{{ profile.about }}About<br>...</p>
+    </div>
+    <div class="row user-profile-bottom">
+        <div class="col-sm-3"><a href="#"><a href="#"><img src="{{ MEDIA_URL }}img/glyphicons_027_search.png"/></a></a></div>
+        <div class="col-sm-2"><a href="#">mikis</a></div>
+        <div class="col-sm-2"><a href="#">reading</a></div>
+        <div class="col-sm-2"><a href="#">readers</a></div>
+        <div class="col-sm-3">
+
+        </div>
+
+    </div>
+    </div>
+
+<br />-->
+    <div class="timeline" xmlns="http://www.w3.org/1999/html">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6"><h3>{{ username }}</h3></div>
+            <div class="col-lg-6 col-md-6">
+                {% if request.user.is_authenticated %}
+                {% ifnotequal request.session.username username %}
+                    <form method="POST" class="input-group">
+                        {% csrf_token %}
+                        <input type="hidden" name="{% if user.reading %}unread{% else %}read{% endif %}" value="{{ username }}" />
+                        <h3 style="text-align: right"><input class="btn btn-danger" type="submit" value="{% if user.reading %}unread{% else %}read{% endif %}" /></h3>
+                    </form>
+
+                {% endifnotequal %}
+
+                {% else %}
+                    <h3 style="text-align: right"><a href="{% url 'login' %}?next={{ request.path }}&q={{ q }}" class="btn btn-danger">read</a></h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <table class="mikis table table-bordered table-hover img-rounded">
+          {% for miki in mikis %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media miki">
+                    <div class="media-body">
+                      <h4 class="media-heading miki-top"><small><a class="pull-left text-danger" href="{% url "userline" miki.username %}">{{ miki.username }}</a></small></h4>
+                      <br><p class="miki-body">{{ miki.body|urlize }}</p><span class="text-muted">{{ miki.time }} ago</span>
+                      {% if request.user.is_authenticated %}
+                      {% ifequal request.session.username username %}
+                        <form method="POST" class="input-group">
+                        {% csrf_token %}
+                        <button class="" type="submit" value="{{ miki.id }}"><i class="glyphicon glyphicon-remove-circle"></i></button>
+                        </form>
+                      {% endifequal %}
+                      {% endif %}
+
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% empty %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="media-body">
+                      <h4 class="media-heading">There are no mikis yet.  Make sure to post one!</h4>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% endfor %}
+          {% if next %}
+              <ul class="pager">
+                <li><a href="?start={{ next }}">More</a></li>
+              </ul>
+          {% endif %}
+    </table>
+
+    </div>
+{% endblock %}

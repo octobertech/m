@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - publicline{% endblock %}
+
+{% block content %}
+    {% load tz %}
+    <div class="timeline" xmlns="http://www.w3.org/1999/html">
+    <ul class="nav nav-tabs nav-justified">
+       <li class="active"><a href="{% url "publicline" %}"><h4>publicline</h4></a></li>
+       <li><a href="{% url "find_users" %}"><h4>find users</h4></a></li>
+    </ul>
+    <table class="mikis table table-bordered table-hover">
+          {% for miki in mikis %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media miki">
+                    <div class="media-body">
+                      <h4 class="media-heading"><small><a class="pull-left text-danger" href="{% url "userline" miki.username %}">{{ miki.username }}</a></small></h4><br>
+                      <p>{{ miki.body|urlize }}</p>
+                      {% localtime on %}
+                          <span class="text-muted">{{ miki.time }} ago</span>
+                      {% endlocaltime %}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% empty %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="media-body">
+                      <h4 class="media-heading">There are no mikis yet.  Make sure to post one!</h4>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% endfor %}
+          {% if next %}
+              <ul class="pager">
+                <li><a href="?start={{ next }}">More</a></li>
+              </ul>
+          {% endif %}
+    </table>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - {{ username }}'s profile settings{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h4>settings</h4>
+        <div class="form-group">
+            <form id="settings_form" method="POST" action="{% url "settings" %}">
+            {% csrf_token %}
+              <div class="form-control">
+                  {{ settings_form.username.errors }}
+                  {{ settings_form.username.label }}:
+                  {{ settings_form.username }}<span>*</span>
+              </div>
+              <div class="form-control">
+                  {{ settings_form.password.errors }}
+                  {{ settings_form.password.label }}:
+                  {{ settings_form.password }}<span>*</span>
+              </div>
+              <div class="form-control">
+                  {{ settings_form.new_password.errors }}
+                  {{ settings_form.new_password.label }}:
+                  {{ settings_form.new_password }}
+              </div>
+              <div class="form-control">
+                  {{ settings_form.name.errors }}
+                  {{ settings_form.name.label }}:
+                  {{ settings_form.name }}
+              </div>
+              <div class="form-control">
+                  {{ settings_form.about.errors }}
+                  {{ settings_form.about.label }}:
+                  {{ settings_form.about }}
+              </div>
+              <div class="form-control">
+                  {{ settings_form.pic.errors }}
+                  {{ settings_form.pic.label }}:{{ settings_form.pic }}
+
+              </div>
+              <div class="form-control">
+                  {{ settings_form.url.errors }}
+                  {{ settings_form.url.label }}:
+                  {{ settings_form.url }}
+              </div>
+                {% if next %}
+                  <input type="hidden" name="next" value="{{ next }}" />
+                {% endif %}
+              <input type="submit" class="btn btn-danger" value="enter">
+            </form>
+        </div>
+    </div>
+{% endblock %}

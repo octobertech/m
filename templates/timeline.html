@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - home{% endblock %}
+
+{% block content %}
+    <div class="timeline" xmlns="http://www.w3.org/1999/html">
+
+    {% if request.user.is_authenticated %}
+        <h3>timeline</h3>
+
+        <div class="footer navbar-fixed-bottom">
+          <form method="POST" class="input-group">
+            {% csrf_token %}
+            <div class="container">
+                <textarea maxlength="200" name="body" type="text" class="input-group-lg"
+                          placeholder="Compose miki* (micropost, limited to 140 characters)"></textarea>
+                <input type="submit" value="Post" class="btn btn-danger">
+            </div>
+          </form>
+        </div>
+
+          <table class="mikis table table-bordered table-hover">
+          {% for miki in mikis %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media miki">
+                    <div class="media-body miki-top">
+                      <h4 class="media-heading"><small><a class="pull-left text-danger" href="{% url "userline" miki.username %}">{{ miki.username }}</a></small></h4>
+                      <br><p class="miki-body">{{ miki.body|urlize }}</p><span class="text-muted">{{ miki.time }} ago</span>{{ miki.time|date:"M j, H:i" }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% empty %}
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="media-body miki-top">
+                      <h4 class="media-heading">There are no mikis yet.  Make sure to post one!</h4>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          {% endfor %}
+          {% if next %}
+              <ul class="pager">
+                <li><a href="?start={{ next }}">More</a></li>
+              </ul>
+          {% endif %}
+          </table>
+
+
+
+        {% comment %}
+        <form method="POST" id="poster">
+            <div class="container">
+                <textarea maxlength="140" name="body" type="text" id="id_body"></textarea>
+            </div>
+            <input type="submit" value="Post Tweet" class="">
+            <div class="clear"></div>
+        </form>
+        <ul id="timeline" class="">
+        {% for miki in mikis %}
+            <li>
+                <a href="{% url "userline" miki.username %}" class="username">{{ miki.username }}</a>
+                <span class="body">{{ miki.body|urlize }}</span>
+            </li>
+        {% empty %}
+            <li>There are no mikis yet.  Make sure to post one!</li>
+        {% endfor %}
+        {% if next %}
+            <li class="more"><a href="?start={{ next }}">More</a></li>
+        {% endif %}
+        </ul>
+        {% endcomment %}
+    {% else %}
+            <div class="jumbotron">
+              <h1>*miki</h1>
+              <p>social micro encyclopedic service that lets anyone to find, learn &amp; share simple definitions and knowledge in 140 characters.</p>
+              <p><span class="badge"></span></p>
+              <p class="pull-left"></p>
+            </div>
+            <table class="table table-bordered table-hover">
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="media">
+                      <a class="pull-left" href="#">    <img class="media-object" src="{{ MEDIA_URL }}img/placeholder-64x64.png">  </a>
+                      <div class="media-body">
+                        <h4 class="media-heading">name <small>@username</small></h4>
+                        <p></p>
+                        <h4><a href="#" class="text-danger">*miki</a> is a <a href="#" class="text-danger">*twitter</a>-like service for <a href="#" class="text-danger">*wikipedia</a>-like purpose</h4>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="media">
+                      <a class="pull-left" href="#">    <img class="media-object" src="{{ MEDIA_URL }}img/placeholder-64x64.png">  </a>
+                      <div class="media-body">
+                        <h4 class="media-heading">name <small>@username</small></h4>
+                        <h4><a href="#" class="text-danger">*miki</a> makes <a href="#" class="text-danger">*wikipedia</a> really social and micro<br></h4>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="media">
+                      <a class="pull-left" href="#">    <img class="media-object" src="{{ MEDIA_URL }}img/placeholder-64x64.png">  </a>
+                      <div class="media-body">
+                        <h4 class="media-heading">name <small>@username</small></h4>
+                        <h4><a href="#" class="text-danger">*miki</a> - put it simply</h4>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+    {% endif %}
+    </div>
+{% endblock %}

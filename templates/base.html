@@ -1,0 +1,111 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>{% block title %}miki{% endblock %}</title>
+    <meta name="description" content="{% block description %}miki - online social micro encyclopedia service{% endblock %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/bootstrap.min.css">
+    <link rel="stylesheet" href="#">
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/bootstrap.min.js"></script>
+	<style>
+	    header {
+            display: inline;
+		    text-align: center;
+		}
+		div .navbar {
+            margin: auto;
+		}
+        div .miki {
+            padding: 5px;
+        }
+        div .footer {
+            background-color: rgba(255,255,255,.1);
+            text-align: center;
+
+        }
+        body {
+            padding-top: 70px;
+        }
+        a {
+            color: #ff0642;
+        }
+        a:hover {
+            color: darkred;
+        }
+
+	</style>
+  </head>
+  {% load tags %}
+  <body>
+    <div class="container-fluid">
+	<header>
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://localhost:8000/" class="navbar-brand"><b>miki</b></a>
+          </div>
+          <div class="navbar navbar-left">
+              <form method="GET" class="navbar-form form-search" >
+                <div class="form-group">
+                    <input type="text" name="q" value="{% if q %}{{ q }}{% endif %}"
+                           class="form-control input-medium search-query" placeholder="search now" />
+                </div>
+                <button type="submit" class="btn btn-danger" ><i class="glyphicon glyphicon-search"></i></button>
+            </form>
+          </div>
+          <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav navbar-right">
+              {% if request.user.is_authenticated %}
+              <li><a href="{% url "compose_miki" %}" class="btn btn-danger"><i class="glyphicon glyphicon-edit"></i> new</a></li>
+              <li><a href="{% url "timeline" %}" class="{% active request "^/" %}"><i class="glyphicon glyphicon-home"></i> home</a></li>
+        	  <li><a href="{% url "publicline" %}" class="{% active request "^public/" %}"><i class="glyphicon glyphicon-globe"></i> discover</a></li>
+        	  <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> profile <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                            <li><a href="{% url "userline" request.session.username %}" class="{% active request "^/" %} text-danger">
+                                <i class="glyphicon glyphicon-user"></i> {{ request.session.username }}</a></li>
+                            <li><a href="{% url "settings" %}"><i class="glyphicon glyphicon-wrench"></i> settings</a></li>
+                            <li><a href="{% url "logout" %}"><i class="glyphicon glyphicon-off"></i> logout</a></li>
+                  </ul>
+              </li>
+              {% else %}
+              <li><a href="{% url "timeline" %}" class="{% active request "^/$" %}"><i class="glyphicon glyphicon-home"></i> home</a></li>
+        	  <li><a href="{% url "publicline" %}" class="{% active request "^/public/" %}"><i class="glyphicon glyphicon-globe"></i> discover</a></li>
+              <li><a href="{% url "login" %}" class="{% active request "^/login/" %}"><i class="glyphicon glyphicon-log-in"></i> login</a></li>
+              <li><a href="{% url "signup" %}" class="{% active request "^/$" %}"><i class="glyphicon glyphicon-qrcode"></i> signup</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+	</header>
+      <div class="container">
+        <div class="row">
+          <div class="hidden-xs col-md-2"></div>
+          <div class="col-md-8">
+          {% block content %}
+          {% endblock %}
+          </div>
+          <div class="hidden-xs col-md-2"></div>
+        </div><br>
+        <div class="row">
+          <div class="col-md-12"></div>
+        </div>
+      </div>
+      <section>
+        <div data-role="footer" data-position="fixed" align="middle">
+          <p class="text-muted">Copyright &copy; Miki 2014 Atai Konushaliev.</p>
+        </div>
+      </section>
+    </div>
+  </body>
+
+</html>
