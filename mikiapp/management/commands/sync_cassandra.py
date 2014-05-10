@@ -1,13 +1,16 @@
 
-import cql
+#import cql
+from cassandra.cluster import Cluster
 
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         # Create Cassandra connection and obtain a cursor.
-        conn = cql.connect("localhost", cql_version="3.0.0")
-        cursor = conn.cursor()
+        #conn = cql.connect("localhost", cql_version="3.0.0")
+        #cursor = conn.cursor()
+        cluster = Cluster()
+        session = cluster.connect()
 
         # This can result in data loss, so prompt the user first.
         print
@@ -20,18 +23,18 @@ class Command(NoArgsCommand):
             return
 
         print "Dropping existing keyspace..."
-        try: cursor.execute("DROP KEYSPACE mikiapp")
+        try: session.execute("DROP KEYSPACE mikiapp")
         except: pass
 
         print "Creating keyspace..."
-        cursor.execute("""
+        session.execute("""
             CREATE KEYSPACE mikiapp
             WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}
         """)
-        cursor.execute("USE mikiapp")
+        session.execute("USE mikiapp")
 
         print "Creating users columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE users (
                 username text PRIMARY KEY,
                 password text,
@@ -43,7 +46,7 @@ class Command(NoArgsCommand):
         """)
 
         print "Creating reading columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE reading (
                 username text,
                 readed text,
@@ -52,7 +55,7 @@ class Command(NoArgsCommand):
         """)
 
         print "Creating readers columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE readers (
                 username text,
                 reading text,
@@ -62,7 +65,7 @@ class Command(NoArgsCommand):
 
 
         print "Creating mikis columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE mikis (
                 mikiid uuid PRIMARY KEY,
                 username text,
@@ -71,7 +74,7 @@ class Command(NoArgsCommand):
         """)
 
         print "Creating userline columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE userline (
                 mikiid timeuuid,
                 username text,
@@ -81,7 +84,7 @@ class Command(NoArgsCommand):
         """)
 
         print "Creating timeline columnfamily..."
-        cursor.execute("""
+        session.execute("""
             CREATE TABLE timeline (
                 mikiid timeuuid,
                 username text,

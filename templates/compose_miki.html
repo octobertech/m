@@ -6,17 +6,20 @@
 {% if request.user.is_authenticated %}
 <div class="container">
     <h4>compose miki</h4>
-            <div class="form-group">
-              <div class="form-control">
-                  <form method="POST" class="input-group">
-                      {% csrf_token %}
-                      <div class="container">
-                          <textarea maxlength="200" name="body" type="text" class="input-group-lg" placeholder="Compose miki* (micropost, limited to 140 characters)"></textarea><br>
-                          <input type="submit" value="Post" class="btn btn-danger">
-                      </div>
-                  </form>
-              </div>
-            </div>
+    <div class="form-group">
+        <div class="form-control" style="min-height: 150px;">
+    <form method="POST" class="input-group">
+       {% csrf_token %}
+       <div class="container">
+          <textarea maxlength="200" name="body" type="text" class="input-group-lg form-control" rows="3" placeholder="Compose miki* (micropost, limited to 140 characters)"></textarea><br>
+           <input type="submit" value="Post" class="btn btn-danger">
+       </div>
+    </form></div>
+    </div>
+
+
+
+
 </div>
 {% endif %}
 {% endblock %}

@@ -4,14 +4,15 @@ import uuid
 import time
 from datetime import datetime
 import threading
-import cql
+from cassandra.cluster import Cluster
 
 local = threading.local()
 try:
     cursor = local.cursor
 except AttributeError:
-    connection = cql.connect("localhost", cql_version="3.0.0")
-    cursor = local.cursor = connection.cursor()
+    cluster = Cluster()
+    session = cluster.connect()
+    cursor = local.cursor = session
     cursor.execute("USE mikiapp")
 
 __all__ = [
@@ -182,6 +183,9 @@ def save_miki(username, body):
     """
     # Create a type 1 UUID based on the current time.
     miki_id = uuid.uuid1()
+
+    #Create a time-zone-aware datetime object based on current time
+    now = datetime.now()
 
     # Make sure the miki body is utf-8 encoded.
     body = body.encode('utf-8')
