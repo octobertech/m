@@ -1,55 +1,51 @@
-
-#import cql
 from cassandra.cluster import Cluster
-
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):
+
     def handle_noargs(self, **options):
-        # Create Cassandra connection and obtain a cursor.
-        #conn = cql.connect("localhost", cql_version="3.0.0")
-        #cursor = conn.cursor()
+        # Create Cassandra connection and obtain a session
         cluster = Cluster()
         session = cluster.connect()
 
-        # This can result in data loss, so prompt the user first.
-        print
-        print "Warning:  This will drop any existing keyspace named \"mikiapp\","
-        print "and delete any data contained within."
-        print
+        rows = session.execute(
+            "SELECT * FROM system.schema_keyspaces WHERE keyspace_name='mikiapp'")
 
-        if not raw_input("Are you sure? (y/n) ").lower() in ('y', "yes"):
-            print "Ok, then we're done here."
-            return
-
-        print "Dropping existing keyspace..."
-        try: session.execute("DROP KEYSPACE mikiapp")
-        except: pass
+        if rows:
+            msg = ' It looks like you already have a mikiapp keyspace.\nDo you '
+            msg += 'want to delete it and recreate it? All current data will '
+            msg += 'be deleted! (y/n): '
+            resp = raw_input(msg)
+            if not resp or resp[0] != 'y':
+                print "Ok, then we're done here."
+                return
+            session.execute("DROP KEYSPACE mikiapp")
 
         print "Creating keyspace..."
         session.execute("""
             CREATE KEYSPACE mikiapp
             WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}
         """)
-        session.execute("USE mikiapp")
+        session.set_keyspace("mikiapp")
 
         print "Creating users columnfamily..."
         session.execute("""
             CREATE TABLE users (
                 username text PRIMARY KEY,
                 password text,
-                name text,
-                about text,
-                pic blob,
-                url text,
             )
         """)
+#name text,
+#about text,
+#pic blob,
+#url text,
 
         print "Creating reading columnfamily..."
         session.execute("""
             CREATE TABLE reading (
                 username text,
                 readed text,
+                since timestamp,
                 PRIMARY KEY(username, readed)
             )
         """)
@@ -59,10 +55,10 @@ class Command(NoArgsCommand):
             CREATE TABLE readers (
                 username text,
                 reading text,
+                since timestamp,
                 PRIMARY KEY(username, reading)
             )
         """)
-
 
         print "Creating mikis columnfamily..."
         session.execute("""
@@ -76,23 +72,22 @@ class Command(NoArgsCommand):
         print "Creating userline columnfamily..."
         session.execute("""
             CREATE TABLE userline (
-                mikiid timeuuid,
                 username text,
-                body text,
-                PRIMARY KEY(username, mikiid)
-            )
-        """)
+                time timeuuid,
+                mikiid uuid,
+                PRIMARY KEY (username, time)
+            ) WITH CLUSTERING ORDER BY (time DESC)
+            """)
 
         print "Creating timeline columnfamily..."
         session.execute("""
             CREATE TABLE timeline (
-                mikiid timeuuid,
                 username text,
-                posted_by text,
-                body text,
-                PRIMARY KEY(username, mikiid)
-            )
-        """)
+                time timeuuid,
+                mikiid uuid,
+                PRIMARY KEY (username, time)
+            ) WITH CLUSTERING ORDER BY (time DESC)
+            """)
 
         print 'All done!'
 

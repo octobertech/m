@@ -1,2 +1,4 @@
 Django
-cql
+cassandra-driver
+simplejson
+blist
