@@ -5,7 +5,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         # Create Cassandra connection and obtain a session
-        cluster = Cluster()
+        cluster = Cluster(['127.0.0.1'])
         session = cluster.connect()
 
         rows = session.execute(

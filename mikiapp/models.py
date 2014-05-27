@@ -6,7 +6,7 @@ from datetime import datetime
 
 from cassandra.cluster import Cluster
 
-cluster = Cluster()
+cluster = Cluster(['127.0.0.1'])
 session = cluster.connect('mikiapp')
 session.execute("USE mikiapp")
 
